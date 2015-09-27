@@ -1,5 +1,5 @@
 library(xcms)
-setwd("/Users/Cody_2/git.repos/brassica_qexactive/data/")
+setwd("/Users/Cody_2/git.repos/brassica_qexactive/data/test")
 
 # infile a test file
 # this high resolution LC/MS data has multiple layers in how it is collected by the q_exactive
@@ -37,7 +37,7 @@ plot(br_peaks2$rt, br_peaks2$mz)
 # here we are pulling out all the data from multiple files at the same time
 # we make a set object from centroided data (smaller), from the q_exactive data
 ?xcmsSet
-br_set <- xcmsSet(method = "centWave", ppm = 3)
+system.time(br_set <- xcmsSet(method = "centWave", ppm = 3))
 class(br_set)
 str(br_set)
 
@@ -52,6 +52,7 @@ str(br_set)
 # group the data based on peaks that it detects and then fill 
 # in values for the missing peaks so you can run stats between samples
 # 
+?group
 br_set <- group(br_set)
 br_set2 <- fillPeaks(br_set)
 str(br_set2)
@@ -59,20 +60,35 @@ plot(br_set2)
 str(br_set)
 
 # prepare the data to get EIC across the samples
+?groups
 br_set3 <- groups(br_set2)
+class(br_set3)
 str(br_set3)
 head(br_set3)
 head(br_set3)
+br_set3
+# quick calculations
+900/60
+7.6*60
+8*60
 
+p_tab <- peakTable(br_set2)
+head(p_tab)
+str(p_tab)
+dim(p_tab)
+p_tab
 
 br_set4 <- as.data.frame(br_set3)
 plot(br_set4$rtmed, br_set4$mzmed)
 
-groupidx1 <- which(br_set3[,"rtmed"] > 2600 & br_set3[,"rtmed"] < 2700 & br_set3[,"npeaks"] == 5)
+groupidx1 <- which(br_set3[,"rtmed"] > 400 & br_set3[,"rtmed"] < 480)
 groupidx2 <- which(br_set3[,"rtmed"] > 3600 & br_set3[,"rtmed"] < 3700 & br_set3[,"npeaks"] == 5)
 groupidx1
 
-eiccor <- getEIC(br_set3, groupidx = c(groupidx1, groupidx2))
+?getEIC
+eiccor <- getEIC(br_set2, groupidx = groupidx1)
+
+
 
 ?diffreport
 br_report <- diffreport(br_set, "high", 1, metlin = 0.15, h=480, w=640)
@@ -82,3 +98,27 @@ br_set
 gt <- groups(br_set)
 colnames(gt)
 head(gt)
+
+# plotting
+library(ggplot2)
+library(reshape2)
+head(p_tab)
+melt
+p_tab_melt <- melt(p_tab, id.vars = c("mz", "mzmin", "mzmax", "rt", "rtmin", "rtmax", "npeaks", "test"))
+head(p_tab_melt)
+p_tab_melt$rt_min <- p_tab_melt$rt/60
+
+
+p <- ggplot(p_tab_melt) + 
+  # geom_smooth(aes(x = rt_min, y = value), size = 0.4) +
+  geom_line(aes(x = rt_min, y = value), size = 0.4) +
+  xlab("Retention Time") + ylab("Intensity") +
+  facet_grid(variable ~ .)
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+p
+
+
+

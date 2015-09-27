@@ -37,7 +37,8 @@ plot(br_peaks2$rt, br_peaks2$mz)
 # here we are pulling out all the data from multiple files at the same time
 # we make a set object from centroided data (smaller), from the q_exactive data
 ?xcmsSet
-system.time(br_set <- xcmsSet(method = "centWave", ppm = 3))
+system.time(br_set <- xcmsSet(nSlaves = 3, method = "centWave", ppm = 3, peakwidth = c(5,12))) # time 101.7
+system.time(br_set <- xcmsSet(method = "centWave", ppm = 3, peakwidth = c(5,12))) # time 197 seconds
 class(br_set)
 str(br_set)
 
@@ -71,6 +72,7 @@ br_set3
 900/60
 7.6*60
 8*60
+8.4*60
 
 p_tab <- peakTable(br_set2)
 head(p_tab)
@@ -81,13 +83,16 @@ p_tab
 br_set4 <- as.data.frame(br_set3)
 plot(br_set4$rtmed, br_set4$mzmed)
 
-groupidx1 <- which(br_set3[,"rtmed"] > 400 & br_set3[,"rtmed"] < 480)
-groupidx2 <- which(br_set3[,"rtmed"] > 3600 & br_set3[,"rtmed"] < 3700 & br_set3[,"npeaks"] == 5)
+br_set3
+groupidx1 <- which(br_set3[,"rtmed"] > 440 & br_set3[,"rtmed"] < 442 & br_set3[,"mzmed"] > 610 & br_set3[,"mzmed"] < 612)
+groupidx2 <- which(br_set3[,"rtmed"] > 502 & br_set3[,"rtmed"] < 504 & br_set3[,"mzmed"] > 640 & br_set3[,"mzmed"] < 642)
 groupidx1
+groupidx2
 
 ?getEIC
-eiccor <- getEIC(br_set2, groupidx = groupidx1)
-
+eiccor <- getEIC(br_set2, groupidx = c(groupidx1, groupidx2))
+eiccor
+plot(eiccor, br_set2)
 
 
 ?diffreport
@@ -110,8 +115,8 @@ p_tab_melt$rt_min <- p_tab_melt$rt/60
 
 
 p <- ggplot(p_tab_melt) + 
-  # geom_smooth(aes(x = rt_min, y = value), size = 0.4) +
-  geom_line(aes(x = rt_min, y = value), size = 0.4) +
+  geom_smooth(aes(x = rt_min, y = value), size = 0.4) +
+  # geom_line(aes(x = rt_min, y = value), size = 0.4) +
   xlab("Retention Time") + ylab("Intensity") +
   facet_grid(variable ~ .)
   theme(axis.title.x = element_text(face="bold", size=20),
@@ -120,5 +125,14 @@ p <- ggplot(p_tab_melt) +
            axis.text.y  = element_text(size=16))
 p
 
-
+p <- ggplot(p_tab_melt) + 
+  geom_line(aes(x = rt_min, y = value), size = 0.4) +
+  xlab("Retention Time") + ylab("Intensity") +
+  facet_grid(variable ~ .) +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=10),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=10),
+           panel.background = element_blank())
+p
 

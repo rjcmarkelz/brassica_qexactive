@@ -40,6 +40,8 @@ str(br_set)
 br_set3 <- groups(br_set2)
 str(br_set3)
 head(br_set3)
+head(br_set3)
+
 br_set4 <- as.data.frame(br_set3)
 plot(br_set4$rtmed, br_set4$mzmed)
 groupidx1 <- which(br_set3[,"rtmed"] > 2600 & br_set3[,"rtmed"] < 2700 & br_set3[,"npeaks"] == 5)
@@ -52,6 +54,7 @@ eiccor <- getEIC(br_set3, groupidx = c(groupidx1, groupidx2))
 br_report <- diffreport(br_set, "high", 1, metlin = 0.15, h=480, w=640)
 str(br_set)
 br_set
+?groups
 gt <- groups(br_set)
 colnames(gt)
 head(gt)

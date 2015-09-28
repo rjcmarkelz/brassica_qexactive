@@ -92,47 +92,118 @@ groupidx2
 ?getEIC
 eiccor <- getEIC(br_set2, groupidx = c(groupidx1, groupidx2))
 eiccor
-plot(eiccor, br_set2)
+str(eiccor)
+test <- plot(eiccor, br_set2)
+test
+head(eiccor@eic)
 
 
-?diffreport
-br_report <- diffreport(br_set, "high", 1, metlin = 0.15, h=480, w=640)
-str(br_set)
-br_set
-?groups
-gt <- groups(br_set)
-colnames(gt)
-head(gt)
+eic_88_q <- as.data.frame(eiccor@eic$`88`[[1]])
+eic_88_k <- as.data.frame(eiccor@eic$`88`[[2]])
+eic_88_q$sample <- paste("high")
+eic_88_k$sample <- paste("high")
+
+
+eic_89_q <- as.data.frame(eiccor@eic$`89`[[1]])
+eic_89_k <- as.data.frame(eiccor@eic$`89`[[2]])
+eic_89_q$sample <- paste("low")
+eic_89_k$sample <- paste("low")
+
+eic_pool_q <- as.data.frame(eiccor@eic$pool5[[1]])
+eic_pool_k <- as.data.frame(eiccor@eic$pool5[[2]])
+eic_pool_q$sample <- paste("pool")
+eic_pool_k$sample <- paste("pool")
+eic_pool_k
+
+eic_q <- as.data.frame(rbind(eic_88_q, eic_89_q, eic_pool_q))
+eic_q
+colnames(eic_q) <- paste(c("rt", "intensity", "sample"))
+names(eic_q)
+
+eic_k <- as.data.frame(rbind(eic_88_k, eic_89_k, eic_pool_k))
+eic_k
+colnames(eic_k) <- paste(c("rt", "intensity", "sample"))
+names(eic_k)
+
+head(eic_k)
+?subset
+q_sub <- eic_q[which(eic_q$rt > 450 & eic_q$rt < 500),]
+dim(q_sub)
+q_sub$met <- paste("quercetin")
+k_sub <- eic_k[which(eic_k$rt > 450 & eic_k$rt < 500),]
+dim(k_sub)
+k_sub$met <- paste("kaempferol")
+
+final <- rbind(q_sub, k_sub)
+head(final)
+final$minutes <- final$rt/60
+
+# ?diffreport
+# br_report <- diffreport(br_set, "high", 1, metlin = 0.15, h=480, w=640)
+# str(br_set)
+# br_set
+# ?groups
+# gt <- groups(br_set)
+# colnames(gt)
+# head(gt)
 
 # plotting
 library(ggplot2)
 library(reshape2)
-head(p_tab)
-melt
+
+
+colnames(p_tab)[9:11] <- paste(c("high", "low", "pool"))
 p_tab_melt <- melt(p_tab, id.vars = c("mz", "mzmin", "mzmax", "rt", "rtmin", "rtmax", "npeaks", "test"))
 head(p_tab_melt)
 p_tab_melt$rt_min <- p_tab_melt$rt/60
 
-
-p <- ggplot(p_tab_melt) + 
-  geom_smooth(aes(x = rt_min, y = value), size = 0.4) +
-  # geom_line(aes(x = rt_min, y = value), size = 0.4) +
-  xlab("Retention Time") + ylab("Intensity") +
-  facet_grid(variable ~ .)
-  theme(axis.title.x = element_text(face="bold", size=20),
-           axis.text.x  = element_text(size=16),
-           axis.title.y = element_text(face="bold", size=20),
-           axis.text.y  = element_text(size=16))
-p
-
-p <- ggplot(p_tab_melt) + 
+chrom <- ggplot(p_tab_melt) + 
   geom_line(aes(x = rt_min, y = value), size = 0.4) +
-  xlab("Retention Time") + ylab("Intensity") +
+  xlab("Retention Time (min)") + ylab("Intensity") +
   facet_grid(variable ~ .) +
   theme(axis.title.x = element_text(face="bold", size=20),
            axis.text.x  = element_text(size=10),
            axis.title.y = element_text(face="bold", size=20),
            axis.text.y  = element_text(size=10),
-           panel.background = element_blank())
-p
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           panel.background = element_blank(),
+           panel.border = element_rect(fill = NA, color = "black"))
+chrom
+
+q_plot <- ggplot() + 
+  geom_line(data = eic_q, aes(x = rt, y = intensity)) +
+  xlab("Retention Time") + ylab("Intensity") +
+  facet_grid(sample ~ .) +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16)) + 
+  scale_x_continuous(limits = c(460, 500))
+q_plot
+
+k_plot <- ggplot() + 
+  geom_line(data = eic_k, aes(x = rt, y = intensity)) +
+  xlab("Retention Time") + ylab("Intensity") +
+  facet_grid(sample ~ .) +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16)) +
+  scale_x_continuous(limits = c(460, 500))
+k_plot
+
+final_plot <- ggplot() + 
+  geom_line(data = final, aes(x = minutes, y = intensity, color = met), size = 1.5) +
+  xlab("Retention Time (mins)") + ylab("Intensity") +
+  facet_grid(sample ~ .) +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(face = "bold", size=12),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(face = "bold", size=12),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           panel.background = element_blank(),
+           panel.border = element_rect(fill = NA, color = "black"))
+final_plot
 

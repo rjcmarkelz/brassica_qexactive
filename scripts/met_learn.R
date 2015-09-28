@@ -41,6 +41,9 @@ groupidx2
 eiccor <- getEIC(xset3, groupidx = c(groupidx1, groupidx2))
 eiccor
 eicraw <- getEIC(xset3, groupidx = c(groupidx1, groupidx2), rt = "raw")
+str(eiccor)
+
+
 
 plot(eicraw, xset3, groupidx = 1)
 plot(eicraw, xset3, groupidx = 2)

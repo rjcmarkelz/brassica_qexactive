@@ -1,5 +1,5 @@
 library(xcms)
-setwd("/Users/Cody_2/git.repos/brassica_qexactive/data/test")
+setwd("/Users/Cody_2/git.repos/brassica_qexactive/data/")
 
 # infile a test file
 # this high resolution LC/MS data has multiple layers in how it is collected by the q_exactive

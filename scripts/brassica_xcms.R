@@ -84,6 +84,7 @@ br_set4 <- as.data.frame(br_set3)
 plot(br_set4$rtmed, br_set4$mzmed)
 
 br_set3
+groupidx2
 groupidx1 <- which(br_set3[,"rtmed"] > 440 & br_set3[,"rtmed"] < 442 & br_set3[,"mzmed"] > 610 & br_set3[,"mzmed"] < 612)
 groupidx2 <- which(br_set3[,"rtmed"] > 502 & br_set3[,"rtmed"] < 504 & br_set3[,"mzmed"] > 640 & br_set3[,"mzmed"] < 642)
 groupidx1
@@ -93,21 +94,22 @@ groupidx2
 eiccor <- getEIC(br_set2, groupidx = c(groupidx1, groupidx2))
 eiccor
 str(eiccor)
-test <- plot(eiccor, br_set2)
+
+plot(eiccor, br_set2)
 test
 head(eiccor@eic)
 
 
 eic_88_q <- as.data.frame(eiccor@eic$`88`[[1]])
 eic_88_k <- as.data.frame(eiccor@eic$`88`[[2]])
-eic_88_q$sample <- paste("high")
-eic_88_k$sample <- paste("high")
+eic_88_q$sample <- paste("low")
+eic_88_k$sample <- paste("low")
 
 
 eic_89_q <- as.data.frame(eiccor@eic$`89`[[1]])
 eic_89_k <- as.data.frame(eiccor@eic$`89`[[2]])
-eic_89_q$sample <- paste("low")
-eic_89_k$sample <- paste("low")
+eic_89_q$sample <- paste("high")
+eic_89_k$sample <- paste("high")
 
 eic_pool_q <- as.data.frame(eiccor@eic$pool5[[1]])
 eic_pool_k <- as.data.frame(eiccor@eic$pool5[[2]])
@@ -129,10 +131,10 @@ head(eic_k)
 ?subset
 q_sub <- eic_q[which(eic_q$rt > 450 & eic_q$rt < 500),]
 dim(q_sub)
-q_sub$met <- paste("quercetin")
+q_sub$met <- paste("kaempferol")
 k_sub <- eic_k[which(eic_k$rt > 450 & eic_k$rt < 500),]
 dim(k_sub)
-k_sub$met <- paste("kaempferol")
+k_sub$met <- paste("quercetin")
 
 final <- rbind(q_sub, k_sub)
 head(final)

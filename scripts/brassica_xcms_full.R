@@ -18,9 +18,17 @@ str(br_set3)
 
 setwd("/Users/Cody_2/git.repos/brassica_qexactive/output/")
 write.table(p_tab, "full_rt_int_mv.csv", sep = ",", row.names = FALSE)
-head(p_tab)
+head(p_tab)[1:10]
+p_tab[1:6,1:10] 
+p_tab
 
-groupidx1 <- which(br_set3[,"rtmed"] > 440 & br_set3[,"rtmed"] < 442 & br_set3[,"mzmed"] > 610 & br_set3[,"mzmed"] < 612)
-groupidx2 <- which(br_set3[,"rtmed"] > 502 & br_set3[,"rtmed"] < 504 & br_set3[,"mzmed"] > 640 & br_set3[,"mzmed"] < 642)
+
+groupidx1 <- which(br_set3[,"rtmed"] > 500 & br_set3[,"rtmed"] < 510 & br_set3[,"mzmed"] > 610 & br_set3[,"mzmed"] < 612)
+groupidx2 <- which(br_set3[,"rtmed"] > 490 & br_set3[,"rtmed"] < 492 & br_set3[,"mzmed"] > 640 & br_set3[,"mzmed"] < 642)
 groupidx1
 groupidx2
+
+eiccor <- getEIC(br_set2, groupidx = c(groupidx1, groupidx2))
+eiccor
+
+plot(eiccor, br_set2)

@@ -157,20 +157,29 @@ library(reshape2)
 colnames(p_tab)[9:11] <- paste(c("high", "low", "pool"))
 p_tab_melt <- melt(p_tab, id.vars = c("mz", "mzmin", "mzmax", "rt", "rtmin", "rtmax", "npeaks", "test"))
 head(p_tab_melt)
+tail(p_tab_melt)
+p_tab_melt
 p_tab_melt$rt_min <- p_tab_melt$rt/60
+str(p_tab_melt)
+
+p_tab_melt$geno <- sub("high","R500", p_tab_melt$variable)
+p_tab_melt$geno <- sub("low","IMB211", p_tab_melt$geno)
+p_tab_melt$geno <- sub("pool","Pool", p_tab_melt$geno)
+
 
 chrom <- ggplot(p_tab_melt) + 
   geom_line(aes(x = rt_min, y = value), size = 0.4) +
   xlab("Retention Time (min)") + ylab("Intensity") +
   facet_grid(variable ~ .) +
   theme(axis.title.x = element_text(face="bold", size=20),
-           axis.text.x  = element_text(size=10),
+           axis.text.x  = element_text(face="bold",size=14),
            axis.title.y = element_text(face="bold", size=20),
-           axis.text.y  = element_text(size=10),
+           axis.text.y  = element_text(face="bold",size=14),
            panel.grid.major = element_blank(),
            panel.grid.minor = element_blank(),
            panel.background = element_blank(),
-           panel.border = element_rect(fill = NA, color = "black"))
+           panel.border = element_rect(fill = NA, color = "black"),
+           strip.text.y = element_text(size = 12, face = "bold"))
 chrom
 
 q_plot <- ggplot() + 
@@ -200,12 +209,16 @@ final_plot <- ggplot() +
   xlab("Retention Time (mins)") + ylab("Intensity") +
   facet_grid(sample ~ .) +
   theme(axis.title.x = element_text(face="bold", size=20),
-           axis.text.x  = element_text(face = "bold", size=12),
+           axis.text.x  = element_text(face = "bold", size=14),
            axis.title.y = element_text(face="bold", size=20),
-           axis.text.y  = element_text(face = "bold", size=12),
+           axis.text.y  = element_text(face = "bold", size=14),
            panel.grid.major = element_blank(),
            panel.grid.minor = element_blank(),
            panel.background = element_blank(),
-           panel.border = element_rect(fill = NA, color = "black"))
+           panel.border = element_rect(fill = NA, color = "black"),
+           strip.text.y = element_text(size = 12, face = "bold"),
+           legend.text = element_text(size = 12, face = "bold"),
+           legend.title = element_text(size = 12, face = "bold")) +
+  scale_color_discrete(name = "Metabolite")
 final_plot
 

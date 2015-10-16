@@ -5,6 +5,5 @@ head(transcripts)
 str(transcripts)
 dim(transcripts)
 
-# open genomic reference sequence in IGV
-# open all BAM files to check for differences in mapped reads
-# manipulate files as below
+# Did not find anything obvious
+ 
